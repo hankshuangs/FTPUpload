@@ -46,6 +46,7 @@
 			this.label5 = new System.Windows.Forms.Label();
 			this.cmbArea = new System.Windows.Forms.ComboBox();
 			this.btnSet = new System.Windows.Forms.Button();
+			this.button2 = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// label1
@@ -60,7 +61,7 @@
 			// 
 			// button1
 			// 
-			this.button1.Location = new System.Drawing.Point(359, 176);
+			this.button1.Location = new System.Drawing.Point(22, 193);
 			this.button1.Name = "button1";
 			this.button1.Size = new System.Drawing.Size(49, 23);
 			this.button1.TabIndex = 1;
@@ -141,7 +142,7 @@
 			// 
 			// btnDestination
 			// 
-			this.btnDestination.Location = new System.Drawing.Point(454, 105);
+			this.btnDestination.Location = new System.Drawing.Point(22, 250);
 			this.btnDestination.Name = "btnDestination";
 			this.btnDestination.Size = new System.Drawing.Size(75, 23);
 			this.btnDestination.TabIndex = 4;
@@ -151,7 +152,7 @@
 			// 
 			// textBox1
 			// 
-			this.textBox1.Location = new System.Drawing.Point(35, 167);
+			this.textBox1.Location = new System.Drawing.Point(22, 222);
 			this.textBox1.Name = "textBox1";
 			this.textBox1.Size = new System.Drawing.Size(100, 22);
 			this.textBox1.TabIndex = 5;
@@ -197,11 +198,22 @@
 			this.btnSet.UseVisualStyleBackColor = true;
 			this.btnSet.Click += new System.EventHandler(this.btnSet_Click);
 			// 
+			// button2
+			// 
+			this.button2.Location = new System.Drawing.Point(155, 250);
+			this.button2.Name = "button2";
+			this.button2.Size = new System.Drawing.Size(75, 23);
+			this.button2.TabIndex = 9;
+			this.button2.Text = "停止時間";
+			this.button2.UseVisualStyleBackColor = true;
+			this.button2.Click += new System.EventHandler(this.button2_Click);
+			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(601, 273);
+			this.Controls.Add(this.button2);
 			this.Controls.Add(this.btnSet);
 			this.Controls.Add(this.cmbArea);
 			this.Controls.Add(this.lblTime);
@@ -245,6 +257,7 @@
 		private System.Windows.Forms.Label label5;
 		private System.Windows.Forms.ComboBox cmbArea;
 		private System.Windows.Forms.Button btnSet;
+		private System.Windows.Forms.Button button2;
 	}
 }
 

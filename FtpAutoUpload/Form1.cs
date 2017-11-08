@@ -54,7 +54,7 @@ namespace FtpAutoUpload
 
 			//計數器 開始每1秒的速度執行中
 			timer1.Enabled = true;
-			timer1.Interval = 1000;
+			timer1.Interval = 5000;
 			timer1.Start();
 
 		}
@@ -62,16 +62,35 @@ namespace FtpAutoUpload
 		private void timer1_Tick(object sender, EventArgs e)
 		{
 			lblTime.Text = DateTime.Now.ToString();
-			string T = System.DateTime.Now.ToString("T");
+			string strDate = DateTime.Now.ToString("yyyy年 MM月 dd日");
+			//String.Split(strDate, " ");
+			string[] newsArr;
+			newsArr = strDate.Split(' ');
+			foreach (string tmp in newsArr)
+			{
+				Console.WriteLine(tmp);
+			}
+			string T = DateTime.Now.ToString("T");
 
 			//每日凌晨01:00:00備份作業
-			if (T.Equals("01:00:00")&& state.Equals("RUNOUT"))
+			//if (T.Equals("01:00:00")&& state.Equals("RUNOUT"))
 			{
 				state = "RUNNING"; //正在跑
 
-
-
+				//本機端
+				//確認目錄是否存在
+				if(Directory.Exists(@"D:\啟品紀錄檔"))
+				{
+					MessageBox.Show(@"D:\啟品紀錄檔 存在");
+				}
+				else
+				{
+					MessageBox.Show(@"D:\啟品紀錄檔 不存在");
+				}
+				
+				
 				state = "RUNOUT"; //跑完了
+				
 			}
 
 		}
@@ -265,6 +284,12 @@ namespace FtpAutoUpload
 			FtpAutoUpload.Properties.Settings.Default.ID = txtID.Text;
 			FtpAutoUpload.Properties.Settings.Default.PW = txtPW.Text;
 			FtpAutoUpload.Properties.Settings.Default.Save();
+		}
+
+		private void button2_Click(object sender, EventArgs e)
+		{
+			//停止時間
+			timer1.Stop(); 
 		}
 
 
