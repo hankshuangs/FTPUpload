@@ -31,6 +31,12 @@ namespace FtpAutoUpload
 
 		private void btnSource_Click(object sender, EventArgs e)
 		{
+			FolderBrowserDialog path = new FolderBrowserDialog();
+			path.ShowDialog();
+			this.texSource.Text = path.SelectedPath;
+
+			#region 設定檔名測試
+			/*
 			Stream myStream = null;
 			OpenFileDialog openFileDialog1 = new OpenFileDialog();
 
@@ -48,10 +54,11 @@ namespace FtpAutoUpload
 						using (myStream)
 						{
 
-								string strPath = openFileDialog1.FileName;
-								this.texSource.Text = strPath;
+							string strPath = openFileDialog1.FileName;
 
-								//ListPathInfo(strPath);
+							strPath = Path.GetDirectoryName(strPath);
+							this.texSource.Text = strPath;
+							//ListPathInfo(strPath);
 
 						}
 					}
@@ -61,6 +68,39 @@ namespace FtpAutoUpload
 					MessageBox.Show("Error: Could not read file from disk. Original error: " + ex.Message);
 				}
 			}
+
+			List<string> myList = new List<string>();
+			List<string> myList2 = new List<string>();
+			// 執行檔路徑下的 MyDir 資料夾
+			//string folderName = System.Windows.Forms.Application.StartupPath + @"\MyDir";
+			//string folderName = System.Windows.Forms.Application.StartupPath + this.texSource.Text;
+			string folderName = this.texSource.Text;
+
+			// 取得資料夾內所有檔案
+			foreach (string fname in System.IO.Directory.GetFiles(folderName))
+			{
+				//string line;
+
+
+				myList2.Add(Path.GetFileName(fname));
+				MessageBox.Show(Path.GetFileName(fname));
+				// 一次讀取一行
+				//System.IO.StreamReader file = new System.IO.StreamReader(fname);
+				//while ((line = file.ReadLine()) != null)
+				//{
+
+				//	myList.Add(line.Trim());
+
+				//}
+
+				//file.Close();
+			}
+			*/
+			#endregion
+
+
+
+
 		}
 
 		private void btnDestination_Click(object sender, EventArgs e)
@@ -139,6 +179,18 @@ namespace FtpAutoUpload
 					requestStream.Close();
 			}
 		}
+
+		private void button1_Click(object sender, EventArgs e)
+		{
+			string ID = this.txtID.Text;
+			string PW = this.txtPW.Text;
+			bool isOK = Upload("C:\\ABC\\t1108.txt", "ftp://192.168.168.102:21//行車紀錄器//高雄區//啟品//t1108.txt", ID, PW);
+			MessageBox.Show(isOK.ToString());
+
+		}
+
+
+
 
 		//private void goToAdirectory()
 		//{

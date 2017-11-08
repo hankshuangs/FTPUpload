@@ -34,9 +34,9 @@
 			this.label2 = new System.Windows.Forms.Label();
 			this.textBox2 = new System.Windows.Forms.TextBox();
 			this.label3 = new System.Windows.Forms.Label();
-			this.textBox3 = new System.Windows.Forms.TextBox();
+			this.txtID = new System.Windows.Forms.TextBox();
 			this.label4 = new System.Windows.Forms.Label();
-			this.textBox4 = new System.Windows.Forms.TextBox();
+			this.txtPW = new System.Windows.Forms.TextBox();
 			this.btnSource = new System.Windows.Forms.Button();
 			this.btnDestination = new System.Windows.Forms.Button();
 			this.textBox1 = new System.Windows.Forms.TextBox();
@@ -58,8 +58,9 @@
 			this.button1.Name = "button1";
 			this.button1.Size = new System.Drawing.Size(49, 23);
 			this.button1.TabIndex = 1;
-			this.button1.Text = "確定";
+			this.button1.Text = "設定";
 			this.button1.UseVisualStyleBackColor = true;
+			this.button1.Click += new System.EventHandler(this.button1_Click);
 			// 
 			// texSource
 			// 
@@ -95,12 +96,13 @@
 			this.label3.Text = "iNas帳號：";
 			this.label3.Click += new System.EventHandler(this.label1_Click);
 			// 
-			// textBox3
+			// txtID
 			// 
-			this.textBox3.Location = new System.Drawing.Point(224, 111);
-			this.textBox3.Name = "textBox3";
-			this.textBox3.Size = new System.Drawing.Size(129, 22);
-			this.textBox3.TabIndex = 2;
+			this.txtID.Location = new System.Drawing.Point(224, 111);
+			this.txtID.Name = "txtID";
+			this.txtID.Size = new System.Drawing.Size(129, 22);
+			this.txtID.TabIndex = 2;
+			this.txtID.Text = "infor";
 			// 
 			// label4
 			// 
@@ -112,12 +114,13 @@
 			this.label4.Text = "密碼：";
 			this.label4.Click += new System.EventHandler(this.label1_Click);
 			// 
-			// textBox4
+			// txtPW
 			// 
-			this.textBox4.Location = new System.Drawing.Point(224, 139);
-			this.textBox4.Name = "textBox4";
-			this.textBox4.Size = new System.Drawing.Size(129, 22);
-			this.textBox4.TabIndex = 2;
+			this.txtPW.Location = new System.Drawing.Point(224, 139);
+			this.txtPW.Name = "txtPW";
+			this.txtPW.Size = new System.Drawing.Size(129, 22);
+			this.txtPW.TabIndex = 2;
+			this.txtPW.Text = "helloibus";
 			// 
 			// btnSource
 			// 
@@ -141,7 +144,7 @@
 			// 
 			// textBox1
 			// 
-			this.textBox1.Location = new System.Drawing.Point(59, 110);
+			this.textBox1.Location = new System.Drawing.Point(35, 129);
 			this.textBox1.Name = "textBox1";
 			this.textBox1.Size = new System.Drawing.Size(100, 22);
 			this.textBox1.TabIndex = 5;
@@ -154,8 +157,8 @@
 			this.Controls.Add(this.textBox1);
 			this.Controls.Add(this.btnDestination);
 			this.Controls.Add(this.btnSource);
-			this.Controls.Add(this.textBox4);
-			this.Controls.Add(this.textBox3);
+			this.Controls.Add(this.txtPW);
+			this.Controls.Add(this.txtID);
 			this.Controls.Add(this.label4);
 			this.Controls.Add(this.textBox2);
 			this.Controls.Add(this.label3);
@@ -179,9 +182,9 @@
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.TextBox textBox2;
 		private System.Windows.Forms.Label label3;
-		private System.Windows.Forms.TextBox textBox3;
+		private System.Windows.Forms.TextBox txtID;
 		private System.Windows.Forms.Label label4;
-		private System.Windows.Forms.TextBox textBox4;
+		private System.Windows.Forms.TextBox txtPW;
 		private System.Windows.Forms.Button btnSource;
 		private System.Windows.Forms.Button btnDestination;
 		private System.Windows.Forms.TextBox textBox1;

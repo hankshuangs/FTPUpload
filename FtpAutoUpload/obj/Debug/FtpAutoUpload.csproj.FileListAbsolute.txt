@@ -16,3 +16,12 @@ C:\Users\Hanks\Documents\Git\FTPUpload\FtpAutoUpload\obj\Debug\FtpAutoUpload.Pro
 C:\Users\Hanks\Documents\Git\FTPUpload\FtpAutoUpload\obj\Debug\FtpAutoUpload.csproj.GenerateResource.Cache
 C:\Users\Hanks\Documents\Git\FTPUpload\FtpAutoUpload\obj\Debug\FtpAutoUpload.exe
 C:\Users\Hanks\Documents\Git\FTPUpload\FtpAutoUpload\obj\Debug\FtpAutoUpload.pdb
+D:\Git\FTPUpload\FtpAutoUpload\bin\Debug\FtpAutoUpload.exe.config
+D:\Git\FTPUpload\FtpAutoUpload\obj\Debug\FtpAutoUpload.exe
+D:\Git\FTPUpload\FtpAutoUpload\obj\Debug\FtpAutoUpload.pdb
+D:\Git\FTPUpload\FtpAutoUpload\bin\Debug\FtpAutoUpload.exe
+D:\Git\FTPUpload\FtpAutoUpload\bin\Debug\FtpAutoUpload.pdb
+D:\Git\FTPUpload\FtpAutoUpload\obj\Debug\FtpAutoUpload.csprojResolveAssemblyReference.cache
+D:\Git\FTPUpload\FtpAutoUpload\obj\Debug\FtpAutoUpload.Form1.resources
+D:\Git\FTPUpload\FtpAutoUpload\obj\Debug\FtpAutoUpload.Properties.Resources.resources
+D:\Git\FTPUpload\FtpAutoUpload\obj\Debug\FtpAutoUpload.csproj.GenerateResource.Cache
