@@ -21,6 +21,58 @@ namespace FtpAutoUpload
 
 		private void Form1_Load(object sender, EventArgs e)
 		{
+			#region 取得之前設定值
+			//地區下拉選單的內容設定
+			this.cmbArea.Items.AddRange(new object[] { "高雄區", "台中區" }); //0:高雄區 1:台中區
+
+			//iNas 路徑
+			if (!String.IsNullOrEmpty(FtpAutoUpload.Properties.Settings.Default.nasIP))
+			{
+				txtNasIP.Text = FtpAutoUpload.Properties.Settings.Default.nasIP;
+			}
+			//資料來源碟
+			if (!String.IsNullOrEmpty(FtpAutoUpload.Properties.Settings.Default.source))
+			{
+				txtSource.Text = FtpAutoUpload.Properties.Settings.Default.source;
+			}
+			//單位(地區)
+			if (!String.IsNullOrEmpty(FtpAutoUpload.Properties.Settings.Default.area))
+			{
+				cmbArea.SelectedItem = FtpAutoUpload.Properties.Settings.Default.area;
+			}
+			//帳號
+			if (!String.IsNullOrEmpty(FtpAutoUpload.Properties.Settings.Default.ID))
+			{
+				txtID.Text = FtpAutoUpload.Properties.Settings.Default.ID;
+			}
+			//密碼
+			if (!String.IsNullOrEmpty(FtpAutoUpload.Properties.Settings.Default.PW))
+			{
+				txtPW.Text = FtpAutoUpload.Properties.Settings.Default.PW;
+			}
+			#endregion
+
+			//計數器 開始每1秒的速度執行中
+			timer1.Enabled = true;
+			timer1.Interval = 1000;
+			timer1.Start();
+
+		}
+		string state = "RUNOUT"; //RUNNING:正在跑 RUNOUT:之前跑完了
+		private void timer1_Tick(object sender, EventArgs e)
+		{
+			lblTime.Text = DateTime.Now.ToString();
+			string T = System.DateTime.Now.ToString("T");
+
+			//每日凌晨01:00:00備份作業
+			if (T.Equals("01:00:00")&& state.Equals("RUNOUT"))
+			{
+				state = "RUNNING"; //正在跑
+
+
+
+				state = "RUNOUT"; //跑完了
+			}
 
 		}
 
@@ -33,7 +85,7 @@ namespace FtpAutoUpload
 		{
 			FolderBrowserDialog path = new FolderBrowserDialog();
 			path.ShowDialog();
-			this.texSource.Text = path.SelectedPath;
+			this.txtSource.Text = path.SelectedPath;
 
 			#region 設定檔名測試
 			/*
@@ -105,26 +157,39 @@ namespace FtpAutoUpload
 
 		private void btnDestination_Click(object sender, EventArgs e)
 		{
-			//OpenFileDialog ofd = new OpenFileDialog();
-			//ofd.InitialDirectory = "ftp://<username>:<password>@<host>";
-			//ofd.ShowDialog();
-
-			string curDir = System.IO.Directory.GetCurrentDirectory();
-			OpenFileDialog openFileDialog1 = new OpenFileDialog();
-			openFileDialog1.InitialDirectory = "ftp://infor:helloibus@192.168.168.102:21/";
-			openFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
-			openFileDialog1.FilterIndex = 2;
-			openFileDialog1.RestoreDirectory = true;
-			DialogResult res = openFileDialog1.ShowDialog();
-			string dirPlusFile = openFileDialog1.FileName;
-			Path.GetDirectoryName(dirPlusFile);
 			
-			int index = dirPlusFile.LastIndexOf(@"\");
-			if (index != -1)
-			{
-				//this.textBox1.Text = dirPlusFile.Substring(index + 1, dirPlusFile.Length - index - 1);
-				this.textBox1.Text = this.textBox2.Text = dirPlusFile;
-			}
+			
+
+
+
+			#region MyRegion
+			/*
+			 * 
+			 //OpenFileDialog ofd = new OpenFileDialog();
+		//ofd.InitialDirectory = "ftp://<username>:<password>@<host>";
+		//ofd.ShowDialog();
+
+		string curDir = System.IO.Directory.GetCurrentDirectory();
+		OpenFileDialog openFileDialog1 = new OpenFileDialog();
+		openFileDialog1.InitialDirectory = "ftp://infor:helloibus@192.168.168.102:21/";
+		openFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+		openFileDialog1.FilterIndex = 2;
+		openFileDialog1.RestoreDirectory = true;
+		DialogResult res = openFileDialog1.ShowDialog();
+		string dirPlusFile = openFileDialog1.FileName;
+		Path.GetDirectoryName(dirPlusFile);
+
+		int index = dirPlusFile.LastIndexOf(@"\");
+		if (index != -1)
+		{
+			//this.textBox1.Text = dirPlusFile.Substring(index + 1, dirPlusFile.Length - index - 1);
+			this.textBox1.Text = this.txtNasIP.Text = dirPlusFile;
+		}
+			 * 
+			 */
+			#endregion
+
+
 
 
 
@@ -191,6 +256,19 @@ namespace FtpAutoUpload
 
 
 
+		private void btnSet_Click(object sender, EventArgs e)
+		{
+			//設定值存檔
+			FtpAutoUpload.Properties.Settings.Default.nasIP = txtNasIP.Text;
+			FtpAutoUpload.Properties.Settings.Default.area = cmbArea.SelectedItem.ToString();
+			FtpAutoUpload.Properties.Settings.Default.source = txtSource.Text;
+			FtpAutoUpload.Properties.Settings.Default.ID = txtID.Text;
+			FtpAutoUpload.Properties.Settings.Default.PW = txtPW.Text;
+			FtpAutoUpload.Properties.Settings.Default.Save();
+		}
+
+
+
 
 		//private void goToAdirectory()
 		//{
@@ -207,4 +285,5 @@ namespace FtpAutoUpload
 		//	}
 		//}
 	}
+
 }
