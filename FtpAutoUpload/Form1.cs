@@ -19,13 +19,11 @@ namespace FtpAutoUpload
 		{
 			InitializeComponent();
 		}
-		public delegate void MyDelegate(string str); //我的委派
-		MyDelegate moveAction;
-
-		private void toAction(string pMsg, MyDelegate moveAction)
+		public delegate void MyDelegate(ArrayList lstFiles); //我的委派
+		public void toAction(ArrayList lstFiles, MyDelegate moveAction)
 		{
 			//去移動某公司的行車紀錄器
-			moveAction(pMsg);
+			moveAction(lstFiles);
 		}
 
 		enum DrivingRecorder { Autotrak, Jasslin }; //列舉DrivingRecorder.Autotrak = 0 啟品 ; DrivingRecorder.Jasslin = 1 捷世林
@@ -69,83 +67,116 @@ namespace FtpAutoUpload
 			{
 				foreach (string str in Program.dirArgs)
 				{
+					//參數為/s表示跑備份
 					if (str.Equals("/s"))
 					{
-						//TODO:執行備份
-						MessageBox.Show(str);
+						lblTime.Text = DateTime.Now.ToString();
+						//設定目錄路徑
+						string baseDir1 = "啟品紀錄器";
+						string baseDir2 = "捷世林行車紀錄器資料夾";
+						string strDate = DateTime.Now.ToString("yyyy年 MM月 dd日");
+						string strDir1 = baseDir1 + " " + strDate;
+						string strDir2 = baseDir2 + " " + strDate;
+						string[] arrDir1 = null;
+						string[] arrDir2 = null;
+						arrDir1 = strDir1.Split(' ');
+						arrDir2 = strDir2.Split(' ');
+						string strPath1 = FtpAutoUpload.Properties.Settings.Default.source; //根目錄 例如D:\
+						string strPath2 = FtpAutoUpload.Properties.Settings.Default.source;
+						//建立目錄
+						string path1 = setPath(arrDir1, strPath1);
+						string path2 = setPath(arrDir2, strPath2);
+						//取得目錄下的檔案清單
+						ArrayList lstFiles1 = getFiles(baseDir1, strPath1);
+						ArrayList lstFiles2 = getFiles(baseDir2, strPath2);
+						
+						MyDelegate moveAction = null;
+						
+						//
+						//搬移檔案  判斷檔案然後去做搬移至到某個目錄下
+						int codeNum = (int)DrivingRecorder.Autotrak;
+						if (codeNum == 0)
+						{
+							moveAction = Autotrak;
+							toAction(lstFiles1, moveAction);
+						}
+						codeNum = (int)DrivingRecorder.Jasslin;
+						if (codeNum == 1)
+						{
+							moveAction = Jasslin;
+							toAction(lstFiles2, moveAction);
+							WriteLog("記錄一下LOG");
+						}
 					}
+					//參數為/t表示測試
+					if (str.Equals("/t"))
+					{
+					}
+
 				}
 			}
-
-			//計數器 開始每1秒的速度執行中
-			timer1.Enabled = true;
-			timer1.Interval = 2000;
-			timer1.Start();
 		}
 
-		private string state = "RUNOUT"; //RUNNING:正在跑 RUNOUT:之前跑完了
+		//private string state = "RUNOUT"; //RUNNING:正在跑 RUNOUT:之前跑完了
 
-		private void timer1_Tick(object sender, EventArgs e)
+		public void Autotrak(ArrayList lstFiles)
 		{
-			lblTime.Text = DateTime.Now.ToString();
-			//設定目錄路徑
 			string baseDir1 = "啟品紀錄器";
-			string baseDir2 = "捷世林行車紀錄器資料夾";
-			string strDate = DateTime.Now.ToString("yyyy年 MM月 dd日");
-			string strDir1 = baseDir1 + " " + strDate;
-			string strDir2 = baseDir2 + " " + strDate;
-			string[] arrDir1 = null;
-			string[] arrDir2 = null;
-			arrDir1 = strDir1.Split(' ');
-			arrDir2 = strDir2.Split(' ');
-			string strPath1 = FtpAutoUpload.Properties.Settings.Default.source; //根目錄 例如D:\
-			string strPath2 = FtpAutoUpload.Properties.Settings.Default.source;
-			//建立目錄
-			strPath1 = setPath(arrDir1, strPath1);
-			strPath2 = setPath(arrDir2, strPath2);
-			//取得目錄下的檔案清單
-			ArrayList lstFiles1 = getFiles(baseDir1, strPath1);
-			ArrayList lstFiles2 = getFiles(baseDir2, strPath2);
-
-			//搬移檔案
-			//TODO:判斷檔案並移至到某個目錄下
-			//MyDelegate moveAction = Autotrak;
-
-			MyDelegate moveAction = null;
-			moveAction = Autotrak;
-			toAction("30萬", moveAction);
-
-			moveAction = Jasslin;
-			toAction("60萬", moveAction);
-			WriteLog("記錄一下LOG");
-			string T = DateTime.Now.ToString("T");
-
-			//每日凌晨01:00:00備份作業
-			//if (T.Equals("01:00:00")&& state.Equals("RUNOUT"))
+			string fileName = "";
+			string pathName = "";
+			try
 			{
-				state = "RUNNING"; //正在跑
-
-				//本機端
-				//確認目錄是否存在
-				if (Directory.Exists(@"D:\啟品紀錄檔\"))
+				foreach (string strPath in lstFiles)
 				{
-					MessageBox.Show(@"D:\啟品紀錄檔 存在");
-				}
-				else
-				{
-					MessageBox.Show(@"D:\啟品紀錄檔 不存在");
-				}
+					pathName = Path.GetDirectoryName(strPath); //路徑的名稱
+					fileName = Path.GetFileName(strPath); //檔名與副檔名
+					int fileNameLen = fileName.Length;
+					//string sdt = fileName.Substring(fileNameLen - 3, 3);
+					//判斷副檔名.SDT
+					//string ss = Path.GetExtension(strPath);
+					if (Path.GetExtension(strPath).Equals(".SDT")&& fileNameLen ==50)
+					{
+						string[] arrDateInf = Path.GetFileNameWithoutExtension(strPath).Split('_');
+						string carType = arrDateInf[0]; //車牌
+						string carRecNo = arrDateInf[1]; //行車紀錄器
+						string no_= arrDateInf[2]; //未知
+						string driver = arrDateInf[3]; //駕駛人
+						string statDate = arrDateInf[4]; //開始日期時間
+						string endDate = arrDateInf[5]; //結束日期時間
 
-				state = "RUNOUT"; //跑完了
+						string dir = baseDir1+" "+("20" + statDate.Substring(0, 2) + "年 " + statDate.Substring(2, 2) + "月 " + statDate.Substring(4, 2) + "日");
+						string[] arrDir1 = dir.Split(' ');
+						string strPath1 = strPath.Substring(0, 3);
+						string path1 = setPath(arrDir1, strPath1);
+
+						//目的地目錄
+						string newpPath = pathName + @"\" + "20" + statDate.Substring(0, 2) + "年" + @"\" + statDate.Substring(2, 2) + "月" + @"\" + statDate.Substring(4, 2) + "日" + @"\"+ fileName;
+						//搬移
+						File.Move(strPath,newpPath);
+
+					}
+					if (Path.GetExtension(strPath).Equals(".SDT") && fileNameLen == 16)
+					{
+						string[] arrDateInf = Path.GetFileNameWithoutExtension(strPath).Split('_');
+						string endDate = arrDateInf[0]; //結束日期時間
+					}
+
+
+				}
+				//判斷檔名該移到那個目錄下
+
+
 			}
+			catch (Exception IOEx)
+			{
+				WriteLog("在本機端搬移啟品行車紀錄器檔"+ fileName + "時發生 \n" + IOEx);
+				throw;
+			}
+			//MessageBox.Show(lstFiles);
 		}
-		public void Autotrak(string pMsg)
+		public void Jasslin(ArrayList lstFiles)
 		{
-			MessageBox.Show(pMsg);
-		}
-		public void Jasslin(string pMsg)
-		{
-			MessageBox.Show(pMsg);
+			//MessageBox.Show(lstFiles);
 		}
 		/// <summary>
 		/// 取得目錄下的檔案清單
@@ -358,11 +389,6 @@ namespace FtpAutoUpload
 			FtpAutoUpload.Properties.Settings.Default.Save();
 		}
 
-		private void button2_Click(object sender, EventArgs e)
-		{
-			//停止時間
-			timer1.Stop();
-		}
 		//寫LOG檔 參考:AlexWangの雲端筆記本 https://dotblogs.com.tw/alexwang/2016/12/08/112052
 		public static void WriteLog(string message)
 		{
@@ -408,4 +434,11 @@ namespace FtpAutoUpload
 		//	}
 		//}
 	}
+			//lstPathInfo.Items.Clear();
+   //         lstPathInfo.Items.Add("路徑完整名稱 : " + Path.GetFullPath(strPath));
+   //         lstPathInfo.Items.Add("路徑根目錄 : " + Path.GetPathRoot(strPath));
+   //         lstPathInfo.Items.Add("路徑目錄資訊 : " + Path.GetDirectoryName(strPath));
+   //         lstPathInfo.Items.Add("路徑檔案完整名稱 : " + Path.GetFileName(strPath));
+   //         lstPathInfo.Items.Add("路徑檔案名稱 : " + Path.GetFileNameWithoutExtension(strPath));
+   //         lstPathInfo.Items.Add("路徑檔案副檔名 : " + Path.GetExtension(strPath));
 }

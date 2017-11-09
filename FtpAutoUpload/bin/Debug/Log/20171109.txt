@@ -8,3 +8,82 @@ Log Entry : 12:26:18 2017年11月09日
   :
   :記錄一下LOG
 -------------------------------
+
+Log Entry : 14:35:23 2017年11月09日
+  :
+  :記錄一下LOG
+-------------------------------
+
+Log Entry : 15:34:24 2017年11月09日
+  :
+  :在本機端搬移啟品行車紀錄器檔171002190257.SDT時發生 
+System.IndexOutOfRangeException: 索引在陣列的界限之外。
+   於 FtpAutoUpload.Form1.Autotrak(ArrayList lstFiles) 於 D:\Git\FTPUpload\FtpAutoUpload\Form1.cs: 行 140
+-------------------------------
+
+Log Entry : 15:36:13 2017年11月09日
+  :
+  :在本機端搬移啟品行車紀錄器檔171002190257.SDT時發生 
+System.IndexOutOfRangeException: 索引在陣列的界限之外。
+   於 FtpAutoUpload.Form1.Autotrak(ArrayList lstFiles) 於 D:\Git\FTPUpload\FtpAutoUpload\Form1.cs: 行 140
+-------------------------------
+
+Log Entry : 15:37:33 2017年11月09日
+  :
+  :在本機端搬移啟品行車紀錄器檔171002190257.SDT時發生 
+System.IndexOutOfRangeException: 索引在陣列的界限之外。
+   於 FtpAutoUpload.Form1.Autotrak(ArrayList lstFiles) 於 D:\Git\FTPUpload\FtpAutoUpload\Form1.cs: 行 140
+-------------------------------
+
+Log Entry : 15:54:45 2017年11月09日
+  :
+  :在本機端搬移啟品行車紀錄器檔255-XH_1000990_1_未插碟_171106055239_171106182510.SDT時發生 
+System.IndexOutOfRangeException: 索引在陣列的界限之外。
+   於 FtpAutoUpload.Form1.Autotrak(ArrayList lstFiles) 於 D:\Git\FTPUpload\FtpAutoUpload\Form1.cs: 行 140
+-------------------------------
+
+Log Entry : 16:05:24 2017年11月09日
+  :
+  :在本機端搬移啟品行車紀錄器檔171002190257.SDT時發生 
+System.IndexOutOfRangeException: 索引在陣列的界限之外。
+   於 FtpAutoUpload.Form1.Autotrak(ArrayList lstFiles) 於 D:\Git\FTPUpload\FtpAutoUpload\Form1.cs: 行 149
+-------------------------------
+
+Log Entry : 16:05:30 2017年11月09日
+  :
+  :在本機端搬移啟品行車紀錄器檔171002190257.SDT時發生 
+System.IndexOutOfRangeException: 索引在陣列的界限之外。
+   於 FtpAutoUpload.Form1.Autotrak(ArrayList lstFiles) 於 D:\Git\FTPUpload\FtpAutoUpload\Form1.cs: 行 149
+-------------------------------
+
+Log Entry : 16:05:42 2017年11月09日
+  :
+  :在本機端搬移啟品行車紀錄器檔171002190257.SDT時發生 
+System.IndexOutOfRangeException: 索引在陣列的界限之外。
+   於 FtpAutoUpload.Form1.Autotrak(ArrayList lstFiles) 於 D:\Git\FTPUpload\FtpAutoUpload\Form1.cs: 行 149
+-------------------------------
+
+Log Entry : 16:07:43 2017年11月09日
+  :
+  :記錄一下LOG
+-------------------------------
+
+Log Entry : 16:22:37 2017年11月09日
+  :
+  :記錄一下LOG
+-------------------------------
+
+Log Entry : 17:07:33 2017年11月09日
+  :
+  :在本機端搬移啟品行車紀錄器檔255-XH_1000990_1_未插碟_171106055239_171106182510.SDT時發生 
+System.IO.DirectoryNotFoundException: 找不到路徑的一部分。
+   於 System.IO.__Error.WinIOError(Int32 errorCode, String maybeFullPath)
+   於 System.IO.File.InternalMove(String sourceFileName, String destFileName, Boolean checkHost)
+   於 System.IO.File.Move(String sourceFileName, String destFileName)
+   於 FtpAutoUpload.Form1.Autotrak(ArrayList lstFiles) 於 D:\Git\FTPUpload\FtpAutoUpload\Form1.cs: 行 155
+-------------------------------
+
+Log Entry : 17:09:51 2017年11月09日
+  :
+  :記錄一下LOG
+-------------------------------

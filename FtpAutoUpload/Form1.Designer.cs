@@ -28,7 +28,6 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.components = new System.ComponentModel.Container();
 			this.label1 = new System.Windows.Forms.Label();
 			this.button1 = new System.Windows.Forms.Button();
 			this.txtSource = new System.Windows.Forms.TextBox();
@@ -41,12 +40,10 @@
 			this.btnSource = new System.Windows.Forms.Button();
 			this.btnDestination = new System.Windows.Forms.Button();
 			this.textBox1 = new System.Windows.Forms.TextBox();
-			this.timer1 = new System.Windows.Forms.Timer(this.components);
 			this.lblTime = new System.Windows.Forms.Label();
 			this.label5 = new System.Windows.Forms.Label();
 			this.cmbArea = new System.Windows.Forms.ComboBox();
 			this.btnSet = new System.Windows.Forms.Button();
-			this.button2 = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// label1
@@ -157,10 +154,6 @@
 			this.textBox1.Size = new System.Drawing.Size(100, 22);
 			this.textBox1.TabIndex = 5;
 			// 
-			// timer1
-			// 
-			this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
-			// 
 			// lblTime
 			// 
 			this.lblTime.AutoSize = true;
@@ -198,22 +191,11 @@
 			this.btnSet.UseVisualStyleBackColor = true;
 			this.btnSet.Click += new System.EventHandler(this.btnSet_Click);
 			// 
-			// button2
-			// 
-			this.button2.Location = new System.Drawing.Point(155, 250);
-			this.button2.Name = "button2";
-			this.button2.Size = new System.Drawing.Size(75, 23);
-			this.button2.TabIndex = 9;
-			this.button2.Text = "停止時間";
-			this.button2.UseVisualStyleBackColor = true;
-			this.button2.Click += new System.EventHandler(this.button2_Click);
-			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(601, 273);
-			this.Controls.Add(this.button2);
 			this.Controls.Add(this.btnSet);
 			this.Controls.Add(this.cmbArea);
 			this.Controls.Add(this.lblTime);
@@ -252,12 +234,10 @@
 		private System.Windows.Forms.Button btnSource;
 		private System.Windows.Forms.Button btnDestination;
 		private System.Windows.Forms.TextBox textBox1;
-		private System.Windows.Forms.Timer timer1;
 		private System.Windows.Forms.Label lblTime;
 		private System.Windows.Forms.Label label5;
 		private System.Windows.Forms.ComboBox cmbArea;
 		private System.Windows.Forms.Button btnSet;
-		private System.Windows.Forms.Button button2;
 	}
 }
 
