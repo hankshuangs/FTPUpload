@@ -151,14 +151,26 @@ namespace FtpAutoUpload
 
 						//目的地目錄
 						string newpPath = pathName + @"\" + "20" + statDate.Substring(0, 2) + "年" + @"\" + statDate.Substring(2, 2) + "月" + @"\" + statDate.Substring(4, 2) + "日" + @"\"+ fileName;
-						//搬移
-						File.Move(strPath,newpPath);
+						//搬移-若檔案存在就會發生例外 解決辦法只好用File.Copy 然後再刪除
+						File.Copy(strPath,newpPath,true); //true 為覆寫
+						File.Delete(strPath);
 
 					}
 					if (Path.GetExtension(strPath).Equals(".SDT") && fileNameLen == 16)
 					{
 						string[] arrDateInf = Path.GetFileNameWithoutExtension(strPath).Split('_');
-						string endDate = arrDateInf[0]; //結束日期時間
+						string statDate = arrDateInf[0]; //開始日期時間
+
+						string dir = baseDir1 + " " + ("20" + statDate.Substring(0, 2) + "年 " + statDate.Substring(2, 2) + "月 " + statDate.Substring(4, 2) + "日");
+						string[] arrDir1 = dir.Split(' ');
+						string strPath1 = strPath.Substring(0, 3);
+						string path1 = setPath(arrDir1, strPath1);
+
+						//目的地目錄
+						string newpPath = pathName + @"\" + "20" + statDate.Substring(0, 2) + "年" + @"\" + statDate.Substring(2, 2) + "月" + @"\" + statDate.Substring(4, 2) + "日" + @"\" + fileName;
+						//搬移-若檔案存在就會發生例外 解決辦法只好用File.Copy 然後再刪除
+						File.Copy(strPath, newpPath, true); //true 為覆寫
+						File.Delete(strPath);
 					}
 
 

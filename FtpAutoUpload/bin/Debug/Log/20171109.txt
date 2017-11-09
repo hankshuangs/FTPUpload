@@ -87,3 +87,29 @@ Log Entry : 17:09:51 2017年11月09日
   :
   :記錄一下LOG
 -------------------------------
+
+Log Entry : 17:15:37 2017年11月09日
+  :
+  :記錄一下LOG
+-------------------------------
+
+Log Entry : 17:16:10 2017年11月09日
+  :
+  :在本機端搬移啟品行車紀錄器檔633-FP_1000995_1_未插碟_170803140237_170803191245.SDT時發生 
+System.IO.IOException: 當檔案已存在時，無法建立該檔案。
+
+   於 System.IO.__Error.WinIOError(Int32 errorCode, String maybeFullPath)
+   於 System.IO.File.InternalMove(String sourceFileName, String destFileName, Boolean checkHost)
+   於 System.IO.File.Move(String sourceFileName, String destFileName)
+   於 FtpAutoUpload.Form1.Autotrak(ArrayList lstFiles) 於 D:\Git\FTPUpload\FtpAutoUpload\Form1.cs: 行 155
+-------------------------------
+
+Log Entry : 17:24:22 2017年11月09日
+  :
+  :記錄一下LOG
+-------------------------------
+
+Log Entry : 17:38:46 2017年11月09日
+  :
+  :記錄一下LOG
+-------------------------------
