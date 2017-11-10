@@ -25,7 +25,7 @@ namespace FtpAutoUpload.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("ftp://192.168.168.102:21")]
+        [global::System.Configuration.DefaultSettingValueAttribute("ftp://192.168.168.102:21//行車紀錄器")]
         public string nasIP {
             get {
                 return ((string)(this["nasIP"]));
@@ -49,7 +49,7 @@ namespace FtpAutoUpload.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("高雄區")]
         public string area {
             get {
                 return ((string)(this["area"]));

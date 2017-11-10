@@ -1,0 +1,10 @@
+
+Log Entry : 09:09:39 2017年11月10日
+  :
+  :在本機端搬移捷世林行車紀錄器檔00010101_.jas時發生 
+System.IO.DirectoryNotFoundException: 找不到路徑 'D:\捷世林行車紀錄器資料夾\0001年\01月\01日\00010101_.jas' 的一部分。
+   於 System.IO.__Error.WinIOError(Int32 errorCode, String maybeFullPath)
+   於 System.IO.File.InternalCopy(String sourceFileName, String destFileName, Boolean overwrite, Boolean checkHost)
+   於 System.IO.File.Copy(String sourceFileName, String destFileName, Boolean overwrite)
+   於 FtpAutoUpload.Form1.Jasslin(ArrayList lstFiles) 於 D:\Git\FTPUpload\FtpAutoUpload\Form1.cs: 行 207
+-------------------------------

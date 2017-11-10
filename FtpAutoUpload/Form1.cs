@@ -31,15 +31,14 @@ namespace FtpAutoUpload
         private enum DrivingRecorder
         { Autotrak, Jasslin }; //列舉DrivingRecorder.Autotrak = 0 啟品 ; DrivingRecorder.Jasslin = 1 捷世林
 
-        private void Form1_Load(object sender, EventArgs e)
+		private enum Inf
+		{ success , fail, complete }; //0:成功 1:失敗 2:完成
+
+		private void Form1_Load(object sender, EventArgs e)
         {
-            #region 取得之前設定值
-
-            //地區下拉選單的內容設定
-            this.cmbArea.Items.AddRange(new object[] { "高雄區", "台中區" }); //0:高雄區 1:台中區
-
-            //iNas 路徑
-            if (!String.IsNullOrEmpty(FtpAutoUpload.Properties.Settings.Default.nasIP))
+			#region 取得之前設定值
+			//iNas 路徑
+			if (!String.IsNullOrEmpty(FtpAutoUpload.Properties.Settings.Default.nasIP))
             {
                 txtNasIP.Text = FtpAutoUpload.Properties.Settings.Default.nasIP;
             }
@@ -51,7 +50,7 @@ namespace FtpAutoUpload
             //單位(地區)
             if (!String.IsNullOrEmpty(FtpAutoUpload.Properties.Settings.Default.area))
             {
-                cmbArea.SelectedItem = FtpAutoUpload.Properties.Settings.Default.area;
+				txtArea.Text = FtpAutoUpload.Properties.Settings.Default.area;
             }
             //帳號
             if (!String.IsNullOrEmpty(FtpAutoUpload.Properties.Settings.Default.ID))
@@ -106,104 +105,248 @@ namespace FtpAutoUpload
             }
         }
 
-        //private string state = "RUNOUT"; //RUNNING:正在跑 RUNOUT:之前跑完了
-
-        public void Autotrak(ArrayList lstFiles)
+		//啟品紀錄器 備份
+		public void Autotrak(ArrayList lstFiles)
         {
             string baseDir1 = "啟品紀錄器";
-            string fileName = "";
-            string pathName = "";
-            try
-            {
-                foreach (string strPath in lstFiles)
-                {
-                    pathName = Path.GetDirectoryName(strPath); //路徑的名稱
-                    fileName = Path.GetFileName(strPath); //檔名與副檔名
-                    int fileNameLen = fileName.Length;
-                    if (Path.GetExtension(strPath).Equals(".SDT") && fileNameLen == 50)
-                    {
-                        //建立檔案日期所對應的目錄
-                        string[] arrDateInf = Path.GetFileNameWithoutExtension(strPath).Split('_');
-                        string statDate = arrDateInf[4]; //開始日期時
-                        string dir = baseDir1 + " " + ("20" + statDate.Substring(0, 2) + "年 " + statDate.Substring(2, 2) + "月 " + statDate.Substring(4, 2) + "日");
-                        string[] arrDir1 = dir.Split(' ');
-                        string strPath1 = strPath.Substring(0, 3);
-                        string path1 = setPath(arrDir1, strPath1);
-
-                        //目的地目錄
-                        string newpPath = pathName + @"\" + "20" + statDate.Substring(0, 2) + "年" + @"\" + statDate.Substring(2, 2) + "月" + @"\" + statDate.Substring(4, 2) + "日" + @"\" + fileName;
-                        File.Copy(strPath, newpPath, true); //true 為覆寫
-                        File.Delete(strPath);
-                    }
-                    if (Path.GetExtension(strPath).Equals(".SDT") && fileNameLen == 16)
-                    {
-                        //建立檔案日期所對應的目錄
-                        string[] arrDateInf = Path.GetFileNameWithoutExtension(strPath).Split('_');
-                        string statDate = arrDateInf[0]; //開始日期時間
-                        string dir = baseDir1 + " " + ("20" + statDate.Substring(0, 2) + "年 " + statDate.Substring(2, 2) + "月 " + statDate.Substring(4, 2) + "日");
-                        string[] arrDir1 = dir.Split(' ');
-                        string strPath1 = strPath.Substring(0, 3);
-                        string path1 = setPath(arrDir1, strPath1);
-
-                        //目的地目錄
-                        string newpPath = pathName + @"\" + "20" + statDate.Substring(0, 2) + "年" + @"\" + statDate.Substring(2, 2) + "月" + @"\" + statDate.Substring(4, 2) + "日" + @"\" + fileName;
-                        File.Copy(strPath, newpPath, true); //true 為覆寫
-                        File.Delete(strPath);
-                    }
-                }
-                //判斷檔名該移到那個目錄下
-            }
-            catch (Exception IOEx)
-            {
-                WriteLog("在本機端搬移啟品行車紀錄器檔" + fileName + "時發生 \n" + IOEx);
-                throw;
-            }
-        }
-
-        public void Jasslin(ArrayList lstFiles)
+			string area = FtpAutoUpload.Properties.Settings.Default.area;
+			int State = 0;
+			foreach (string strPath in lstFiles)
+			{
+				State = bak_FTP_Autotrak(strPath, baseDir1, area); //啟品_FTP_移動
+				if (State==1)
+					break;//若該檔FTP上送失敗,該檔本機,就不移動,讓使用者去發現,並查看LOG檔問題
+				//State = bak_Machine_Autotrak(strPath, baseDir1); //啟品_本機_移動		 
+			}
+			
+		}
+		//捷世林行車紀錄器資料夾 備份
+		public void Jasslin(ArrayList lstFiles)
         {
             string baseDir2 = "捷世林行車紀錄器資料夾";
-            string fileName = "";
-            string pathName = "";
-            try
-            {
-                foreach (string strPath in lstFiles)
-                {
-                    pathName = Path.GetDirectoryName(strPath); //路徑的名稱
-                    fileName = Path.GetFileName(strPath); //檔名與副檔名
-                    int fileNameLen = fileName.Length;
-                    if (Path.GetExtension(strPath).Equals(".SDT") && fileNameLen == 16)
-                    {
-                        //建立檔案日期所對應的目錄
-                        string[] arrDateInf = Path.GetFileNameWithoutExtension(strPath).Split('_');
-                        string statDate = arrDateInf[0]; //開始日期時間
-                        string dir = baseDir2 + " " + ("20" + statDate.Substring(0, 2) + "年 " + statDate.Substring(2, 2) + "月 " + statDate.Substring(4, 2) + "日");
-                        string[] arrDir1 = dir.Split(' ');
-                        string strPath1 = strPath.Substring(0, 3);
-                        string path1 = setPath(arrDir1, strPath1);
+			int State = 0;
+			foreach (string strPath in lstFiles)
+			{
+				//State = bak_FTP_Jasslin(strPath, baseDir2); //捷世林_FTP_移動
+				if (State == 1)
+					break;//若該檔FTP上送失敗,該檔本機,就不移動,讓使用者去發現,並查看LOG檔問題
+				//State = bak_Machine_Jasslin(strPath, baseDir2); //捷世林_本機_移動		 
+			}
+		}
+		
+		//啟品_FTP_移動
+		public int bak_FTP_Autotrak(string strPath, string baseDir1, string area)
+		{
+			string pathName = Path.GetDirectoryName(strPath); //路徑的名稱
+			string fileName = Path.GetFileName(strPath); //檔名與副檔名
+			int fileNameLen = fileName.Length;
+			string UserName = FtpAutoUpload.Properties.Settings.Default.ID;
+			string Password = FtpAutoUpload.Properties.Settings.Default.PW;
+			try
+			{				
+				//正常檔
+				if (Path.GetExtension(strPath).Equals(".SDT") && fileNameLen == 50)
+				{
+					//建立檔案日期所對應的目錄
+					string[] arrDateInf = Path.GetFileNameWithoutExtension(strPath).Split('_');
+					string statDate = arrDateInf[4]; //開始日期時
+					string dir = area +" "+ baseDir1 + " " + ("20" + statDate.Substring(0, 2) + "年 " + statDate.Substring(2, 2) + "月 " + statDate.Substring(4, 2) + "日");
+					string[] arrDir1 = dir.Split(' ');
+					string FTP_Path = setFTP_Path(arrDir1, UserName, Password);
+					FTP_Path = FTP_Path + "//" + fileName; //目的地
+					bool isOK = Upload(strPath, FTP_Path, UserName, Password);
+	}
+				//異常檔
+				if (Path.GetExtension(strPath).Equals(".SDT") && (fileNameLen < 50 || fileNameLen > 50))
+				{
+					//建立檔案日期所對應的目錄
+					string[] arrDateInf = Path.GetFileNameWithoutExtension(strPath).Split('_');
+					string statDate = arrDateInf[0]; //開始日期時間
+					string dir = area +" "+ baseDir1 + " 異常檔";
+					string[] arrDir1 = dir.Split(' ');
+					string FTP_Path = setFTP_Path(arrDir1, UserName, Password);
+					FTP_Path = FTP_Path + "//" + fileName; //目的地
+					bool isOK = Upload(strPath, FTP_Path, UserName, Password);
+				}
+			}
+			catch (Exception IOEx)
+			{
+				WriteLog("FTP搬移啟品行車紀錄器檔" + fileName + "時發生 \n" + IOEx);
+				return (int)Inf.fail;
+			}
+			return (int)Inf.success;
+		}
 
-                        //目的地目錄
-                        string newpPath = pathName + @"\" + "20" + statDate.Substring(0, 2) + "年" + @"\" + statDate.Substring(2, 2) + "月" + @"\" + statDate.Substring(4, 2) + "日" + @"\" + fileName;
-                        File.Copy(strPath, newpPath, true); //true 為覆寫
-                        File.Delete(strPath);
-                    }
-                }
-                //判斷檔名該移到那個目錄下
-            }
-            catch (Exception IOEx)
-            {
-                WriteLog("在本機端搬移捷世林行車紀錄器檔" + fileName + "時發生 \n" + IOEx);
-                throw;
-            }
-        }
+		//啟品_本機_移動
+		public int bak_Machine_Autotrak(string strPath, string baseDir1)
+		{
+			string pathName = Path.GetDirectoryName(strPath); //路徑的名稱
+			string fileName = Path.GetFileName(strPath); //檔名與副檔名
+			int fileNameLen = fileName.Length;
+			try
+			{				
+				//正常檔
+				if (Path.GetExtension(strPath).Equals(".SDT") && fileNameLen == 50)
+				{
+					//建立檔案日期所對應的目錄
+					string[] arrDateInf = Path.GetFileNameWithoutExtension(strPath).Split('_');
+					string statDate = arrDateInf[4]; //開始日期時
+					string dir = baseDir1 + " " + ("20" + statDate.Substring(0, 2) + "年 " + statDate.Substring(2, 2) + "月 " + statDate.Substring(4, 2) + "日");
+					string[] arrDir1 = dir.Split(' ');
+					string strPath1 = strPath.Substring(0, 3);
+					string path1 = setPath(arrDir1, strPath1);
 
-        /// <summary>
-        /// 取得目錄下的檔案清單
-        /// </summary>
-        /// <param name="baseDir1">例如某個路徑上的目錄"\啟品紀錄檔\"</param>
-        /// <param name="strPath1">例如根目錄"D:\"</param>
-        /// <returns></returns>
-        public static ArrayList getFiles(string baseDir1, string strPath1)
+					//目的地目錄
+					string newpPath = pathName + @"\" + "20" + statDate.Substring(0, 2) + "年" + @"\" + statDate.Substring(2, 2) + "月" + @"\" + statDate.Substring(4, 2) + "日" + @"\" + fileName;
+					File.Copy(strPath, newpPath, true); //true 為覆寫
+					File.Delete(strPath);
+				}
+				//異常檔
+				if (Path.GetExtension(strPath).Equals(".SDT") && (fileNameLen < 50 || fileNameLen > 50))
+				{
+					//建立檔案日期所對應的目錄
+					string[] arrDateInf = Path.GetFileNameWithoutExtension(strPath).Split('_');
+					string statDate = arrDateInf[0]; //開始日期時間
+					string dir = baseDir1 + " 異常檔";
+					string[] arrDir1 = dir.Split(' ');
+					string strPath1 = strPath.Substring(0, 3);
+					string path1 = setPath(arrDir1, strPath1);
+
+					//目的地目錄
+					string newpPath = pathName + @"\" + "異常檔" + @"\" + fileName;
+					File.Copy(strPath, newpPath, true); //true 為覆寫
+					File.Delete(strPath);
+				}
+			}
+			catch (Exception IOEx)
+			{
+				WriteLog("本機搬移啟品行車紀錄器檔" + fileName + "時發生 \n" + IOEx);
+				return (int)Inf.fail;
+			}
+			return (int)Inf.success;
+		}
+		//捷世林_FTP_移動
+		public int bak_FTP_Jasslin(string strPath, string baseDir2)
+		{
+			string pathName = Path.GetDirectoryName(strPath); //路徑的名稱
+			string fileName = Path.GetFileName(strPath); //檔名與副檔名
+			int fileNameLen = fileName.Length;
+			try
+			{
+				//正常檔
+				if (Path.GetExtension(strPath).Equals(".jas") && fileNameLen == 19)
+				{
+					//建立檔案日期所對應的目錄
+					string[] arrDateInf = Path.GetFileNameWithoutExtension(strPath).Split('_');
+					string statDate = arrDateInf[0]; //開始日期時間
+					string dir = baseDir2 + " " + (statDate.Substring(0, 4) + "年 " + statDate.Substring(4, 2) + "月 " + statDate.Substring(6, 2) + "日");
+					string[] arrDir1 = dir.Split(' ');
+					string strPath1 = strPath.Substring(0, 3);
+					string path1 = setPath(arrDir1, strPath1);
+
+					//目的地目錄
+					string newpPath = pathName + @"\" + statDate.Substring(0, 4) + "年" + @"\" + statDate.Substring(4, 2) + "月" + @"\" + statDate.Substring(6, 2) + "日" + @"\" + fileName;
+					File.Copy(strPath, newpPath, true); //true 為覆寫
+					File.Delete(strPath);
+				}
+				//異常檔
+				if (Path.GetExtension(strPath).Equals(".jas") && (fileNameLen < 19 || fileNameLen > 19))
+				{
+					//建立檔案日期所對應的目錄
+					string[] arrDateInf = Path.GetFileNameWithoutExtension(strPath).Split('_');
+					string statDate = arrDateInf[0]; //開始日期時間
+					string dir = baseDir2 + " 異常檔";
+					string[] arrDir1 = dir.Split(' ');
+					string strPath1 = strPath.Substring(0, 3);
+					string path1 = setPath(arrDir1, strPath1);
+
+					//目的地目錄
+					string newpPath = pathName + @"\" + "異常檔" + @"\" + fileName;
+					File.Copy(strPath, newpPath, true); //true 為覆寫
+					File.Delete(strPath);
+				}
+			}
+			catch (Exception IOEx)
+			{
+				WriteLog("FTP搬移捷世林行車紀錄器檔" + fileName + "時發生 \n" + IOEx);
+			}
+			
+			return (int)Inf.success;
+		}
+		//捷世林_本機_移動
+		public int bak_Machine_Jasslin(string strPath, string baseDir2)
+		{
+			string pathName = Path.GetDirectoryName(strPath); //路徑的名稱
+			string fileName = Path.GetFileName(strPath); //檔名與副檔名
+			int fileNameLen = fileName.Length;
+			try
+			{
+				//正常檔
+				if (Path.GetExtension(strPath).Equals(".jas") && fileNameLen == 19)
+				{
+					//建立檔案日期所對應的目錄
+					string[] arrDateInf = Path.GetFileNameWithoutExtension(strPath).Split('_');
+					string statDate = arrDateInf[0]; //開始日期時間
+					string dir = baseDir2 + " " + (statDate.Substring(0, 4) + "年 " + statDate.Substring(4, 2) + "月 " + statDate.Substring(6, 2) + "日");
+					string[] arrDir1 = dir.Split(' ');
+					string strPath1 = strPath.Substring(0, 3);
+					string path1 = setPath(arrDir1, strPath1);
+
+					//目的地目錄
+					string newpPath = pathName + @"\" + statDate.Substring(0, 4) + "年" + @"\" + statDate.Substring(4, 2) + "月" + @"\" + statDate.Substring(6, 2) + "日" + @"\" + fileName;
+					File.Copy(strPath, newpPath, true); //true 為覆寫
+					File.Delete(strPath);
+				}
+				//異常檔
+				if (Path.GetExtension(strPath).Equals(".jas") && (fileNameLen < 19 || fileNameLen > 19))
+				{
+					//建立檔案日期所對應的目錄
+					string[] arrDateInf = Path.GetFileNameWithoutExtension(strPath).Split('_');
+					string statDate = arrDateInf[0]; //開始日期時間
+					string dir = baseDir2 + " 異常檔";
+					string[] arrDir1 = dir.Split(' ');
+					string strPath1 = strPath.Substring(0, 3);
+					string path1 = setPath(arrDir1, strPath1);
+
+					//目的地目錄
+					string newpPath = pathName + @"\" + "異常檔" + @"\" + fileName;
+					File.Copy(strPath, newpPath, true); //true 為覆寫
+					File.Delete(strPath);
+				}
+			}
+			catch (Exception IOEx)
+			{
+				WriteLog("本機搬移捷世林行車紀錄器檔" + fileName + "時發生 \n" + IOEx);
+			}
+			return (int)Inf.success;
+		}
+
+		/// <summary>
+		/// 若FTP上的目錄不存在就新增目錄
+		/// </summary>
+		/// <param name="arrDir1"></param>
+		/// <param name="strPath1"></param>
+		/// <returns></returns>
+		private string setFTP_Path(string[] arrDir1, string sUserName, string sPassword)
+		{
+			string iNasIP = FtpAutoUpload.Properties.Settings.Default.nasIP;
+			string sFullPath = iNasIP;
+			foreach (string Forder in arrDir1)			
+			{
+				sFullPath = sFullPath + "//" + Forder;
+				CreateFTP_Forder(sFullPath, sUserName, sPassword);
+			}
+			return sFullPath;
+		}
+
+
+		/// <summary>
+		/// 取得目錄下的檔案清單
+		/// </summary>
+		/// <param name="baseDir1">例如某個路徑上的目錄"\啟品紀錄檔\"</param>
+		/// <param name="strPath1">例如根目錄"D:\"</param>
+		/// <returns></returns>
+		public static ArrayList getFiles(string baseDir1, string strPath1)
         {
             ArrayList arrlist = new ArrayList();
             if (Directory.Exists(strPath1))
@@ -235,10 +378,6 @@ namespace FtpAutoUpload
                 }
             }
             return strPath1;
-        }
-
-        private void label1_Click(object sender, EventArgs e)
-        {
         }
 
         private void btnSource_Click(object sender, EventArgs e)
@@ -376,9 +515,9 @@ namespace FtpAutoUpload
             }
             catch (Exception ex)
             {
-                Console.WriteLine("CreateForder 錯誤:{0}", ex.Message);
-                throw new Exception(ex.Message);
-            }
+				WriteLog("FTP上傳" + fileName + "失敗原因：" + ex.Message);
+				return false;
+			}
             finally
             {
                 if (uploadResponse != null)
@@ -390,30 +529,22 @@ namespace FtpAutoUpload
             }
         }
 
-        public bool CreateForder(string sFullPath, string sUserName, string sPassword)
+        public void CreateFTP_Forder(string sFullPath, string sUserName, string sPassword)
         {
-            bool bRtn = false;
             try
             {
                 FtpWebRequest ftpRequest = (FtpWebRequest)WebRequest.Create(sFullPath);
                 ftpRequest.Proxy = null;
                 ftpRequest.Credentials = new NetworkCredential(sUserName, sPassword);
-
                 ftpRequest.Method = WebRequestMethods.Ftp.MakeDirectory;
-
-                FtpWebResponse CreateForderResponse = (FtpWebResponse)ftpRequest.GetResponse();
-                Console.WriteLine("Upload status: {0}", CreateForderResponse.StatusDescription);
-                if (CreateForderResponse.StatusCode == FtpStatusCode.CommandOK)
-                    bRtn = true;
-                else
-                    Console.WriteLine("CreateForder 錯誤：{0}", CreateForderResponse.StatusCode.ToString());
+				FtpWebResponse CreateForderResponse = (FtpWebResponse)ftpRequest.GetResponse();
                 CreateForderResponse.Close();
             }
             catch (Exception ex)
             {
-                Console.WriteLine("CreateForder 錯誤:{0}", ex.Message);
+                //Console.WriteLine("CreateForder 錯誤:{0}", ex.Message);
+				//出現例外當作不知道
             }
-            return bRtn;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -424,12 +555,12 @@ namespace FtpAutoUpload
             MessageBox.Show(isOK.ToString());
         }
 
-        private void btnSet_Click(object sender, EventArgs e)
+		//設定值存檔
+		private void btnSet_Click(object sender, EventArgs e)
         {
-            //設定值存檔
             FtpAutoUpload.Properties.Settings.Default.nasIP = txtNasIP.Text;
-            FtpAutoUpload.Properties.Settings.Default.area = cmbArea.SelectedItem.ToString();
-            FtpAutoUpload.Properties.Settings.Default.source = txtSource.Text;
+			FtpAutoUpload.Properties.Settings.Default.area = txtArea.Text;
+			FtpAutoUpload.Properties.Settings.Default.source = txtSource.Text;
             FtpAutoUpload.Properties.Settings.Default.ID = txtID.Text;
             FtpAutoUpload.Properties.Settings.Default.PW = txtPW.Text;
             FtpAutoUpload.Properties.Settings.Default.Save();
@@ -455,6 +586,7 @@ namespace FtpAutoUpload
             }
         }
 
+		//記錄檔格式
         private static void Log(string logMessage, TextWriter w)
         {
             w.Write("\r\nLog Entry : ");

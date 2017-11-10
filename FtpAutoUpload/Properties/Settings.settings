@@ -3,13 +3,13 @@
   <Profiles />
   <Settings>
     <Setting Name="nasIP" Type="System.String" Scope="User">
-      <Value Profile="(Default)">ftp://192.168.168.102:21</Value>
+      <Value Profile="(Default)">ftp://192.168.168.102:21//行車紀錄器</Value>
     </Setting>
     <Setting Name="source" Type="System.String" Scope="User">
       <Value Profile="(Default)">D:\</Value>
     </Setting>
     <Setting Name="area" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">高雄區</Value>
     </Setting>
     <Setting Name="ID" Type="System.String" Scope="User">
       <Value Profile="(Default)">infor</Value>
