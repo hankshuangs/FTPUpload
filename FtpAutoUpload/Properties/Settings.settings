@@ -17,5 +17,8 @@
     <Setting Name="PW" Type="System.String" Scope="User">
       <Value Profile="(Default)">helloibus</Value>
     </Setting>
+    <Setting Name="isbakComplete" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">2</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
