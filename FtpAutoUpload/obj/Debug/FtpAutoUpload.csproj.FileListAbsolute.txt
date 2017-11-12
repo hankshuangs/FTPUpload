@@ -25,3 +25,8 @@ D:\Git\FTPUpload\FtpAutoUpload\obj\Debug\FtpAutoUpload.csprojResolveAssemblyRefe
 D:\Git\FTPUpload\FtpAutoUpload\obj\Debug\FtpAutoUpload.Form1.resources
 D:\Git\FTPUpload\FtpAutoUpload\obj\Debug\FtpAutoUpload.Properties.Resources.resources
 D:\Git\FTPUpload\FtpAutoUpload\obj\Debug\FtpAutoUpload.csproj.GenerateResource.Cache
+C:\Users\Hanks\Documents\Git\FTPUpload\FtpAutoUpload\bin\Debug\FtpAutoUpload.exe.manifest
+C:\Users\Hanks\Documents\Git\FTPUpload\FtpAutoUpload\bin\Debug\FtpAutoUpload.application
+C:\Users\Hanks\Documents\Git\FTPUpload\FtpAutoUpload\obj\Debug\FtpAutoUpload.TrustInfo.xml
+C:\Users\Hanks\Documents\Git\FTPUpload\FtpAutoUpload\obj\Debug\FtpAutoUpload.exe.manifest
+C:\Users\Hanks\Documents\Git\FTPUpload\FtpAutoUpload\obj\Debug\FtpAutoUpload.application

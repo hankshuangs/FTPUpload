@@ -40,6 +40,7 @@
             this.label5 = new System.Windows.Forms.Label();
             this.btnSet = new System.Windows.Forms.Button();
             this.txtArea = new System.Windows.Forms.TextBox();
+            this.btnToBak = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label1
@@ -118,7 +119,7 @@
             this.btnSource.TabIndex = 3;
             this.btnSource.Text = "瀏覽";
             this.btnSource.UseVisualStyleBackColor = true;
-            this.btnSource.Click += new System.EventHandler(this.btnSource_Click);
+            this.btnSource.Click += new System.EventHandler(this.BtnSource_Click);
             // 
             // label5
             // 
@@ -131,13 +132,13 @@
             // 
             // btnSet
             // 
-            this.btnSet.Location = new System.Drawing.Point(443, 145);
+            this.btnSet.Location = new System.Drawing.Point(443, 134);
             this.btnSet.Name = "btnSet";
-            this.btnSet.Size = new System.Drawing.Size(89, 58);
+            this.btnSet.Size = new System.Drawing.Size(89, 33);
             this.btnSet.TabIndex = 8;
-            this.btnSet.Text = "確認資料設定";
+            this.btnSet.Text = "資料設定";
             this.btnSet.UseVisualStyleBackColor = true;
-            this.btnSet.Click += new System.EventHandler(this.btnSet_Click);
+            this.btnSet.Click += new System.EventHandler(this.BtnSet_Click);
             // 
             // txtArea
             // 
@@ -146,12 +147,23 @@
             this.txtArea.Size = new System.Drawing.Size(100, 22);
             this.txtArea.TabIndex = 9;
             // 
+            // btnToBak
+            // 
+            this.btnToBak.Location = new System.Drawing.Point(443, 173);
+            this.btnToBak.Name = "btnToBak";
+            this.btnToBak.Size = new System.Drawing.Size(89, 33);
+            this.btnToBak.TabIndex = 8;
+            this.btnToBak.Text = "即刻備份";
+            this.btnToBak.UseVisualStyleBackColor = true;
+            this.btnToBak.Click += new System.EventHandler(this.BtnToBak_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(566, 225);
+            this.ClientSize = new System.Drawing.Size(566, 229);
             this.Controls.Add(this.txtArea);
+            this.Controls.Add(this.btnToBak);
             this.Controls.Add(this.btnSet);
             this.Controls.Add(this.btnSource);
             this.Controls.Add(this.txtPW);
@@ -164,7 +176,8 @@
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label1);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "行車紀錄器備份作業";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -185,6 +198,7 @@
 		private System.Windows.Forms.Label label5;
 		private System.Windows.Forms.Button btnSet;
 		private System.Windows.Forms.TextBox txtArea;
-	}
+        private System.Windows.Forms.Button btnToBak;
+    }
 }
 

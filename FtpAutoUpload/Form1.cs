@@ -1,15 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Collections;
+using System.IO;
 using System.Net;
 using System.Windows.Forms;
-using System.IO;
-using System.Collections;
 
 namespace FtpAutoUpload
 {
@@ -20,21 +13,19 @@ namespace FtpAutoUpload
             InitializeComponent();
         }
 
-        public delegate void MyDelegate(ArrayList lstFiles); //我的委派
-
-        public void toAction(ArrayList lstFiles, MyDelegate moveAction)
-        {
-            //去移動某公司的行車紀錄器
-            moveAction(lstFiles);
-        }
-
         private enum DrivingRecorder
         { Autotrak, Jasslin }; //列舉DrivingRecorder.Autotrak = 0 啟品 ; DrivingRecorder.Jasslin = 1 捷世林
 
         private enum Inf
         { success, fail, complete }; //0:成功 1:失敗 2:完成
 
-        //private int isbakComplete = (int)Inf.fail; //預設備分失敗
+        public delegate void MyDelegate(ArrayList lstFiles); //我的委派
+
+        public void ToAction(ArrayList lstFiles, MyDelegate moveAction)
+        {
+            //去移動某公司的行車紀錄器
+            moveAction(lstFiles);
+        }
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -72,72 +63,96 @@ namespace FtpAutoUpload
             {
                 foreach (string str in Program.dirArgs)
                 {
-                    //參數為/s表示跑備份
+                    //參數:/s表示跑備份
                     if (str.Equals("/s"))
                     {
-                        try
-                        {
-                            //設定目錄路徑
-                            string baseDir1 = "啟品紀錄器";
-                            string baseDir2 = "捷世林行車紀錄器資料夾";
-                            string strPath1 = FtpAutoUpload.Properties.Settings.Default.source; //根目錄 例如D:\
-                            string strPath2 = FtpAutoUpload.Properties.Settings.Default.source;
-
-                            //取得目錄下的檔案清單
-                            ArrayList lstFiles1 = getFiles(baseDir1, strPath1);
-                            ArrayList lstFiles2 = getFiles(baseDir2, strPath2);
-
-                            //搬移檔案  判斷檔案然後去做搬移至到某個目錄下
-                            MyDelegate moveAction = null;
-                            int codeNum = (int)DrivingRecorder.Autotrak;
-                            if (codeNum == 0)
-                            {
-                                moveAction = Autotrak;
-                                toAction(lstFiles1, moveAction);
-                            }
-                            codeNum = (int)DrivingRecorder.Jasslin;
-                            if (codeNum == 1)
-                            {
-                                moveAction = Jasslin;
-                                toAction(lstFiles2, moveAction);
-                            }
-                            FtpAutoUpload.Properties.Settings.Default.isbakComplete = (int)Inf.complete; //備份完成
-                            WriteLog("備份完成");
-                        }
-                        catch (Exception ex)
-                        {
-                            WriteLog("有未知的錯誤造成備份失敗而中斷，可能原因: \n\r" + ex);
-                            FtpAutoUpload.Properties.Settings.Default.isbakComplete = (int)Inf.fail;
-                        }
-                        FtpAutoUpload.Properties.Settings.Default.Save();
-                        this.Close();
-                        Environment.Exit(Environment.ExitCode);
+                        ToBak(str);
                     }
                     if (str.Equals("/t"))
                     {
-                        FtpAutoUpload.Properties.Settings.Default.isbakComplete = (int)Inf.fail;
-                        FtpAutoUpload.Properties.Settings.Default.Save();
+                        //TODO:測試
                     }
                 }
             }
-            //若備份失敗顯示LOG檔內容
             if (FtpAutoUpload.Properties.Settings.Default.isbakComplete == 1)
             {
-                ArrayList lstFiles = getFiles("Log", AppDomain.CurrentDomain.BaseDirectory);
-                lstFiles.Sort();
-                lstFiles.Reverse();
-                string fileName = lstFiles[0].ToString();
-                using (StreamReader sr = new StreamReader(fileName, System.Text.Encoding.UTF8))
-                {
-                    FileReader(sr, fileName);
-                }
+                //若備份失敗顯示LOG檔內容
+                ReadLogMessage();
             }
         }
 
-        public async void FileReader(StreamReader sr, string filePath)
-
+        private void ToBak(string parParameter)
         {
-            long size = sr.BaseStream.Length;
+            try
+            {
+                //設定目錄路徑
+                string baseDir1 = "啟品紀錄器";
+                string baseDir2 = "捷世林行車紀錄器資料夾";
+                string strPath1 = FtpAutoUpload.Properties.Settings.Default.source; //根目錄 例如D:\
+                string strPath2 = FtpAutoUpload.Properties.Settings.Default.source;
+
+                //取得目錄下的檔案清單
+                ArrayList lstFiles1 = GetFiles(baseDir1, strPath1);
+                ArrayList lstFiles2 = GetFiles(baseDir2, strPath2);
+
+                //搬移檔案  判斷檔案然後去做搬移至到某個目錄下
+                MyDelegate moveAction = null;
+                int codeNum = (int)DrivingRecorder.Autotrak;
+                if (codeNum == 0)
+                {
+                    moveAction = Autotrak;
+                    ToAction(lstFiles1, moveAction);
+                }
+                codeNum = (int)DrivingRecorder.Jasslin;
+                if (codeNum == 1)
+                {
+                    moveAction = Jasslin;
+                    ToAction(lstFiles2, moveAction);
+                }
+                if (lstFiles1.Count != 0)
+                {
+                    FtpAutoUpload.Properties.Settings.Default.isbakComplete = (int)Inf.complete; //備份完成
+                    WriteLog(baseDir1 + "備份完成");
+                }
+                else
+                {
+                    WriteLog(baseDir1 + "中無行車記錄檔");
+                }
+                if (lstFiles2.Count != 0)
+                {
+                    FtpAutoUpload.Properties.Settings.Default.isbakComplete = (int)Inf.complete; //備份完成
+                    WriteLog(baseDir2 + "中無行車記錄檔");
+                }
+                else
+                {
+                    WriteLog(baseDir2 + "中無行車記錄檔");
+                }
+            }
+            catch (Exception ex)
+            {
+                WriteLog("有未知的錯誤造成備份失敗而中斷，可能原因: \n\r" + ex);
+                FtpAutoUpload.Properties.Settings.Default.isbakComplete = (int)Inf.fail;
+            }
+            FtpAutoUpload.Properties.Settings.Default.Save();
+
+            if (parParameter.Equals("/s"))
+            {
+                this.Close();
+                Environment.Exit(Environment.ExitCode);
+            }
+            else
+            {
+                ReadLogMessage(); //如果是手動按備份,結束後顯示LOG檔訊息。
+            }
+        }
+
+        public async void ReadLogMessage()
+        {
+            ArrayList lstFiles = GetFiles("Log", AppDomain.CurrentDomain.BaseDirectory);
+            lstFiles.Sort();
+            lstFiles.Reverse();
+            string fileName = lstFiles[0].ToString();
+            StreamReader sr = new StreamReader(fileName, System.Text.Encoding.UTF8);
             int countLine = 0;
             string result = "";
 
@@ -148,7 +163,7 @@ namespace FtpAutoUpload
                 countLine = countLine + 1;
             }
             sr.Close();
-            MessageBox.Show(result, "錯誤訊息");
+            MessageBox.Show(result, "LOG檔訊息");
         }
 
         //啟品紀錄器 備份
@@ -200,7 +215,7 @@ namespace FtpAutoUpload
                         string statDate = arrDateInf[4]; //開始日期時
                         string dir = area + " " + baseDir + " " + ("20" + statDate.Substring(0, 2) + "年 " + statDate.Substring(2, 2) + "月 " + statDate.Substring(4, 2) + "日");
                         string[] arrDir1 = dir.Split(' ');
-                        string FTP_Path = setFTP_Path(arrDir1, UserName, Password);
+                        string FTP_Path = SetFTP_Path(arrDir1, UserName, Password);
                         FTP_Path = FTP_Path + "//" + fileName; //目的地
                         bool isOK = Upload(filePath, FTP_Path, UserName, Password);
                     }
@@ -212,7 +227,7 @@ namespace FtpAutoUpload
                         string statDate = arrDateInf[0]; //開始日期時間
                         string dir = area + " " + baseDir + " 異常檔";
                         string[] arrDir1 = dir.Split(' ');
-                        string FTP_Path = setFTP_Path(arrDir1, UserName, Password);
+                        string FTP_Path = SetFTP_Path(arrDir1, UserName, Password);
                         FTP_Path = FTP_Path + "//" + fileName; //目的地
                         bool isOK = Upload(filePath, FTP_Path, UserName, Password);
                     }
@@ -236,7 +251,7 @@ namespace FtpAutoUpload
                         string statDate = arrDateInf[0]; //開始日期時間
                         string dir = area + " " + baseDir + " " + (statDate.Substring(0, 4) + "年 " + statDate.Substring(4, 2) + "月 " + statDate.Substring(6, 2) + "日");
                         string[] arrDir1 = dir.Split(' ');
-                        string FTP_Path = setFTP_Path(arrDir1, UserName, Password);
+                        string FTP_Path = SetFTP_Path(arrDir1, UserName, Password);
                         FTP_Path = FTP_Path + "//" + fileName; //目的地
                         bool isOK = Upload(filePath, FTP_Path, UserName, Password);
                     }
@@ -248,7 +263,7 @@ namespace FtpAutoUpload
                         string statDate = arrDateInf[0]; //開始日期時間
                         string dir = area + " " + baseDir + " 異常檔";
                         string[] arrDir1 = dir.Split(' ');
-                        string FTP_Path = setFTP_Path(arrDir1, UserName, Password);
+                        string FTP_Path = SetFTP_Path(arrDir1, UserName, Password);
                         FTP_Path = FTP_Path + "//" + fileName; //目的地
                         bool isOK = Upload(filePath, FTP_Path, UserName, Password);
                     }
@@ -281,7 +296,7 @@ namespace FtpAutoUpload
                         string dir = baseDir + " " + ("20" + statDate.Substring(0, 2) + "年 " + statDate.Substring(2, 2) + "月 " + statDate.Substring(4, 2) + "日");
                         string[] arrDir1 = dir.Split(' ');
                         string strPath1 = strPath.Substring(0, 3);
-                        string path1 = setPath(arrDir1, strPath1);
+                        string path1 = SetPath(arrDir1, strPath1);
 
                         //目的地目錄
                         string newpPath = pathName + @"\" + "20" + statDate.Substring(0, 2) + "年" + @"\" + statDate.Substring(2, 2) + "月" + @"\" + statDate.Substring(4, 2) + "日" + @"\" + fileName;
@@ -297,7 +312,7 @@ namespace FtpAutoUpload
                         string dir = baseDir + " 異常檔";
                         string[] arrDir1 = dir.Split(' ');
                         string strPath1 = strPath.Substring(0, 3);
-                        string path1 = setPath(arrDir1, strPath1);
+                        string path1 = SetPath(arrDir1, strPath1);
 
                         //目的地目錄
                         string newpPath = pathName + @"\" + "異常檔" + @"\" + fileName;
@@ -325,7 +340,7 @@ namespace FtpAutoUpload
                         string dir = baseDir + " " + (statDate.Substring(0, 4) + "年 " + statDate.Substring(4, 2) + "月 " + statDate.Substring(6, 2) + "日");
                         string[] arrDir1 = dir.Split(' ');
                         string strPath1 = strPath.Substring(0, 3);
-                        string path1 = setPath(arrDir1, strPath1);
+                        string path1 = SetPath(arrDir1, strPath1);
 
                         //目的地目錄
                         string newpPath = pathName + @"\" + statDate.Substring(0, 4) + "年" + @"\" + statDate.Substring(4, 2) + "月" + @"\" + statDate.Substring(6, 2) + "日" + @"\" + fileName;
@@ -341,7 +356,7 @@ namespace FtpAutoUpload
                         string dir = baseDir + " 異常檔";
                         string[] arrDir1 = dir.Split(' ');
                         string strPath1 = strPath.Substring(0, 3);
-                        string path1 = setPath(arrDir1, strPath1);
+                        string path1 = SetPath(arrDir1, strPath1);
 
                         //目的地目錄
                         string newpPath = pathName + @"\" + "異常檔" + @"\" + fileName;
@@ -365,7 +380,7 @@ namespace FtpAutoUpload
         /// <param name="arrDir1"></param>
         /// <param name="strPath1"></param>
         /// <returns></returns>
-        private string setFTP_Path(string[] arrDir1, string sUserName, string sPassword)
+        private string SetFTP_Path(string[] arrDir1, string sUserName, string sPassword)
         {
             string iNasIP = FtpAutoUpload.Properties.Settings.Default.nasIP;
             string sFullPath = iNasIP;
@@ -383,7 +398,7 @@ namespace FtpAutoUpload
         /// <param name="baseDir">例如某個路徑上的目錄"\啟品紀錄檔\"</param>
         /// <param name="strPath">例如根目錄"D:\"</param>
         /// <returns></returns>
-        public static ArrayList getFiles(string baseDir, string strPath)
+        public static ArrayList GetFiles(string baseDir, string strPath)
         {
             ArrayList arrlist = new ArrayList();
             try
@@ -399,8 +414,8 @@ namespace FtpAutoUpload
             }
             catch (Exception)
             {
-                WriteLog("根目錄或者baseDir目錄：可能不存在或是名稱錯誤。");
-                Environment.Exit(Environment.ExitCode);
+                WriteLog("根目錄或者" + baseDir + "目錄：可能不存在或是名稱錯誤。");
+                MessageBox.Show("根目錄或者" + baseDir + "目錄：可能不存在或是名稱錯誤。", "錯誤訊息");
             }
             return arrlist;
         }
@@ -411,7 +426,7 @@ namespace FtpAutoUpload
         /// <param name="arrDir1">例如是日期目錄字串"yyyy年 MM月 dd日"用Split(' ')切割出來的陣列</param>
         /// <param name="strPath1">例如是個根目錄"D:/" </param>
         /// <returns></returns>
-        public static string setPath(string[] arrDir1, string strPath1)
+        public static string SetPath(string[] arrDir1, string strPath1)
         {
             //確認目錄與新增目錄
             foreach (string dir1 in arrDir1)
@@ -425,7 +440,7 @@ namespace FtpAutoUpload
             return strPath1;
         }
 
-        private void btnSource_Click(object sender, EventArgs e)
+        private void BtnSource_Click(object sender, EventArgs e)
         {
             FolderBrowserDialog path = new FolderBrowserDialog();
             path.ShowDialog();
@@ -499,18 +514,36 @@ namespace FtpAutoUpload
             }
         }
 
-        //設定值存檔
-        private void btnSet_Click(object sender, EventArgs e)
+        /// <summary>
+        /// 設定值存檔
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BtnSet_Click(object sender, EventArgs e)
         {
-            FtpAutoUpload.Properties.Settings.Default.nasIP = txtNasIP.Text;
-            FtpAutoUpload.Properties.Settings.Default.area = txtArea.Text;
-            FtpAutoUpload.Properties.Settings.Default.source = txtSource.Text;
-            FtpAutoUpload.Properties.Settings.Default.ID = txtID.Text;
-            FtpAutoUpload.Properties.Settings.Default.PW = txtPW.Text;
-            FtpAutoUpload.Properties.Settings.Default.Save();
+            if (String.IsNullOrEmpty(this.txtArea.Text) ||
+                String.IsNullOrEmpty(this.txtSource.Text) ||
+                String.IsNullOrEmpty(this.txtNasIP.Text) ||
+                String.IsNullOrEmpty(this.txtID.Text) ||
+                String.IsNullOrEmpty(this.txtPW.Text))
+            {
+                MessageBox.Show("資料欄位上有空值。", "訊息");
+            }
+            else
+            {
+                FtpAutoUpload.Properties.Settings.Default.nasIP = txtNasIP.Text;
+                FtpAutoUpload.Properties.Settings.Default.area = txtArea.Text;
+                FtpAutoUpload.Properties.Settings.Default.source = txtSource.Text;
+                FtpAutoUpload.Properties.Settings.Default.ID = txtID.Text;
+                FtpAutoUpload.Properties.Settings.Default.PW = txtPW.Text;
+                FtpAutoUpload.Properties.Settings.Default.Save();
+            }
         }
 
-        //寫LOG檔 參考:AlexWangの雲端筆記本 https://dotblogs.com.tw/alexwang/2016/12/08/112052
+        /// <summary>
+        /// 寫LOG檔作業
+        /// </summary>
+        /// <param name="message">要增加到LOG檔中的訊息</param>
         public static void WriteLog(string message)
         {
             string DIRNAME = AppDomain.CurrentDomain.BaseDirectory + @"\Log\";
@@ -521,7 +554,6 @@ namespace FtpAutoUpload
 
             if (!File.Exists(FILENAME))
             {
-                // The File.Create method creates the file and opens a FileStream on the file. You neeed to close it.
                 File.Create(FILENAME).Close();
             }
             using (StreamWriter sw = File.AppendText(FILENAME))
@@ -530,14 +562,42 @@ namespace FtpAutoUpload
             }
         }
 
-        //記錄檔格式
+        /// <summary>
+        /// LOG檔格式
+        /// </summary>
+        /// <param name="logMessage">要增加到LOG檔中的訊息</param>
+        /// <param name="w">寫檔物件</param>
         private static void Log(string logMessage, TextWriter w)
         {
-            w.Write("\r\nLog Entry : ");
+            w.Write("Log Entry : ");
             w.WriteLine("{0} {1}", DateTime.Now.ToLongTimeString(), DateTime.Now.ToLongDateString());
-            w.WriteLine("  :");
+            //w.WriteLine("  :");
             w.WriteLine("  :{0}", logMessage);
             w.WriteLine("-------------------------------");
+        }
+
+        /// <summary>
+        /// 即刻備份
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BtnToBak_Click(object sender, EventArgs e)
+        {
+            if (String.IsNullOrEmpty(this.txtArea.Text) ||
+                String.IsNullOrEmpty(this.txtSource.Text) ||
+                String.IsNullOrEmpty(this.txtNasIP.Text) ||
+                String.IsNullOrEmpty(this.txtID.Text) ||
+                String.IsNullOrEmpty(this.txtPW.Text))
+            {
+                MessageBox.Show("欄位資料有空值，請確認後按下資料設定按鈕。", "訊息");
+            }
+            else
+            {
+                if (MessageBox.Show("備份需花費幾分鐘時間，是否要開始即刻備份。", "訊息", MessageBoxButtons.OKCancel) == DialogResult.OK)
+                {
+                    ToBak("");
+                }
+            }
         }
     }
 
